@@ -2,12 +2,13 @@
 
     <ul class="sidebar-nav" id="sidebar-nav">
 
-        <li class="nav-item">
-            <a class="nav-link collapsed {{ request()->is('dashboard*') ? 'active' : 'incorrect' }}" href="index.html">
+    <li class="nav-item">
+    <a class="nav-link {{ request()->is('dashboard*') ? 'active' : '' }}" href="{{ route('dashboard.index') }}">
                 <i class="bi bi-grid"></i>
                 <span>Dashboard</span>
             </a>
         </li><!-- End Dashboard Nav -->
+
         @foreach ($mainMenus as $menu)
             @if (!$menu->subMenus->isNotEmpty())
                 <li class="nav-item">

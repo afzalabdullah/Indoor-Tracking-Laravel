@@ -14,33 +14,41 @@ class SiteController extends Controller
     // Show the form to create a new site
     public function create()
     {
+        $userId = Auth::id(); // Get the authenticated user's ID
+        // dd($userId);
         return view('sites.create');
     }
 
     // Store a new site
-    public function store(Request $request)
-    {
-        // Validate the incoming request
-        $request->validate([
-            'name' => 'required|unique:sites,name',
-            'description' => 'required|string',
-            'anchors' => 'required|array|min:3',
-            'assets' => 'required|array|min:1',
-            'assets.*.device_uid' => 'required|string|unique:assets,device_uid',
-            'assets.*.device_icon' => 'required|string',
-            'assets.*.device_name' => 'required|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
+    // Store a new site
+public function store(Request $request)
+{
+    $userId = Auth::id(); // Get the authenticated user's ID
 
-        // Store the image in the 'public/images' folder
-        $imagePath = $request->file('image')->store('images', 'public');
+    // Validate the incoming request
+    $request->validate([
+        'name' => 'required|unique:sites,name',
+        'description' => 'required|string',
+        'anchors' => 'required|array|min:3',
+        'assets' => 'required|array|min:1',
+        'assets.*.device_uid' => 'required|string|unique:assets,device_uid',
+        'assets.*.device_icon' => 'required|string',
+        'assets.*.device_name' => 'required|string',
+        'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+    ]);
 
+    // Store the image in the 'public/images' folder
+    $imagePath = $request->file('image')->store('images', 'public');
+
+    // Attempt to create a new site
+    try {
         // Create new site
         $site = Site::create([
-            'email' => Auth::user()->email,
+            'email' => Auth::user()->email, // Get email from authenticated user
             'name' => $request->name,
             'description' => $request->description,
             'image_url' => asset('storage/' . $imagePath),
+            'user_id' => $userId,// Assign the logged-in user's ID
         ]);
 
         // Store anchors and assets
@@ -48,7 +56,14 @@ class SiteController extends Controller
         $this->storeAssets($request->assets, $site->id);
 
         return redirect()->route('sites.index')->with('success', 'Site created successfully!');
+
+    } catch (\Exception $e) {
+        // Log the error for debugging
+        \Log::error('Failed to create site:', ['error' => $e->getMessage()]);
+        return redirect()->back()->with('error', 'Failed to create site. Please try again later.');
     }
+}
+
 
     // Get all sites by email
     public function index()
@@ -60,7 +75,10 @@ class SiteController extends Controller
     }
     public function live()
     {
-        $sites = Site::all(); // Fetch all sites from the database
+        $userEmail = Auth::user()->email;
+        // Fetch all sites from the database associated with the user's email
+         $sites = Site::where('email', $userEmail)->get(); // Call get() to execute the query
+
         return view('sites.live', compact('sites')); // Pass the sites to the view
     }
 

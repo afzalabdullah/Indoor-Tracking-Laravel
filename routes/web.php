@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\MenuController;
+use App\Http\Controllers\Menu;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\TrilaterationController;
 use App\Http\Controllers\DashboardController;
@@ -11,6 +11,9 @@ use App\Http\Controllers\Auth\RegisterController;
 
 // Authentication routes
 Auth::routes();
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('auth.register');
+Route::post('/register', [RegisterController::class, 'register']);
+
 
 // Protected routes group
 Route::middleware(['auth'])->group(function () {
@@ -18,8 +21,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
     // Menu Management
-    Route::resource('menu', MenuController::class);
-    Route::delete('/menu/{id}', [MenuController::class, 'destroy']);
+    Route::resource('menu', Menu::class);
+    Route::delete('/menu/{id}', [Menu::class, 'destroy']);
 
     // Site Management
     Route::resource('sites', SiteController::class);
@@ -30,8 +33,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/sites/show/{id}', [SiteController::class, 'show'])->name('sites.show');
     Route::get('/live', [SiteController::class, 'live'])->name('sites.live');
 
-    Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('auth.register');
-    Route::post('/register', [RegisterController::class, 'register']);
 
 
     // Trilateration route

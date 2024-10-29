@@ -8,8 +8,8 @@
                     <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
                         <div class="d-flex justify-content-center py-4">
                             <p class="logo d-flex align-items-center w-auto">
-                                <img src="assets/img/logo.png" alt="">
-                                <span class="d-none d-lg-block text-decoration-none">Tirmizimpex</span>
+                                <img src="assets/img/delivery.png" alt="">
+                                <span class="d-none d-lg-block text-decoration-none">MapMySpace</span>
                             </p>
                         </div><!-- End Logo -->
 
@@ -68,7 +68,7 @@
                         </div>
 
                         <div class="credits">
-                            Designed by <a href="">AHM</a>
+                            Designed by <a href="">Abdullah</a>
                         </div>
 
                     </div>

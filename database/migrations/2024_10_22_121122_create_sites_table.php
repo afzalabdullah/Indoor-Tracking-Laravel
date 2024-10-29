@@ -12,13 +12,14 @@ return new class extends Migration
     public function up()
     {
         Schema::create('sites', function (Blueprint $table) {
-            $table->id();
-            $table->string('email'); // Store user's email
-            $table->string('name')->unique(); // Unique site name
-            $table->text('description')->nullable(); // Site description
-            $table->integer('assets')->default(0); // Number of assets, default to 0
-            $table->string('image_url')->nullable(); // URL for the site image
-            $table->timestamps(); // Laravel timestamps for created_at and updated_at
+            $table->id(); // Auto-incrementing primary key
+            $table->string('email')->unique(); // Unique email for the site
+            $table->string('name'); // Name of the site
+            $table->text('description'); // Description of the site
+            $table->string('image_url'); // URL of the site's image
+            $table->unsignedBigInteger('user_id'); // Foreign key for user
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade'); // Foreign key constraint
+            $table->timestamps(); // Created at and updated at timestamps
         });
     }
 

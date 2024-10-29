@@ -12,9 +12,9 @@
 </div><!-- End Page Title -->
 
 <section class="section">
-    <div class="row">
+    <div class="row justify-content-center">
         <div class="col-lg-8">
-            <div class="card">
+            <div class="card shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">Site Information</h5>
 
@@ -88,7 +88,7 @@
                             <input type="file" name="image" id="image" class="form-control" required>
                         </div>
 
-                        <div class="text-center">
+                        <div class="text-center mt-4">
                             <button type="submit" class="btn btn-success">Create Site</button>
                             <button type="reset" class="btn btn-secondary">Reset</button>
                         </div>
@@ -98,12 +98,12 @@
         </div>
     </div>
 </section>
+
 <script>
     let anchorIndex = 1;
     let assetIndex = 1;
 
     document.getElementById('add-anchor').addEventListener('click', function() {
-        const container = document.getElementById('anchors-container');
         const newAnchor = `
             <div class="anchor mb-3 p-3 border rounded bg-light" style="margin-top: 20px;">
                 <div class="form-group">
@@ -121,13 +121,11 @@
                 <button type="button" class="btn btn-danger remove-anchor">Remove Anchor</button>
             </div>
         `;
-        const addAnchorButton = document.getElementById('add-anchor');
-        addAnchorButton.insertAdjacentHTML('beforebegin', newAnchor);
+        document.getElementById('anchors-container').insertAdjacentHTML('beforeend', newAnchor);
         anchorIndex++;
     });
 
     document.getElementById('add-asset').addEventListener('click', function() {
-        const container = document.getElementById('assets-container');
         const newAsset = `
             <div class="asset mb-3 p-3 border rounded bg-light" style="margin-top: 20px;">
                 <div class="form-group">
@@ -145,8 +143,7 @@
                 <button type="button" class="btn btn-danger remove-asset">Remove Device</button>
             </div>
         `;
-        const addAssetButton = document.getElementById('add-asset');
-        addAssetButton.insertAdjacentHTML('beforebegin', newAsset);
+        document.getElementById('assets-container').insertAdjacentHTML('beforeend', newAsset);
         assetIndex++;
     });
 
@@ -164,13 +161,18 @@
     });
 </script>
 
-
 <style>
     .card {
         border-radius: 10px;
+        border: none;
     }
+
     .btn-outline-primary {
         width: 100%;
+    }
+
+    .alert {
+        margin-top: 20px;
     }
 </style>
 

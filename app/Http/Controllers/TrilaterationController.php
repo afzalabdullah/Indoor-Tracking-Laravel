@@ -57,7 +57,16 @@ class TrilaterationController extends Controller
 
         // Perform trilateration for each device based on the gathered readings.
         foreach ($deviceUidReadings as $deviceUid => $anchorDistances) {
-            if (count($anchorDistances) < 3) {
+            // Remove duplicate anchor positions if present
+            $uniqueAnchorDistances = [];
+            foreach ($anchorDistances as $anchor) {
+                $key = $anchor['x'] . ',' . $anchor['y'];
+                if (!isset($uniqueAnchorDistances[$key])) {
+                    $uniqueAnchorDistances[$key] = $anchor;
+                }
+            }
+
+            if (count($uniqueAnchorDistances) < 3) {
                 $results[$deviceUid] = ['error' => 'Insufficient anchor data'];
                 Log::warning('Insufficient anchor data for Device UID: ' . $deviceUid);
                 continue; // Skip trilateration if not enough data
@@ -66,8 +75,8 @@ class TrilaterationController extends Controller
             $anchorPositions = [];
             $distances = [];
 
-            // Prepare the anchor positions and distances for trilateration.
-            foreach ($anchorDistances as $anchor) {
+            // Prepare the unique anchor positions and distances for trilateration.
+            foreach ($uniqueAnchorDistances as $anchor) {
                 $anchorPositions[] = [$anchor['x'], $anchor['y']];
                 $distances[] = $anchor['distance'];
             }
@@ -111,7 +120,7 @@ class TrilaterationController extends Controller
     /**
      * Trilateration logic using the geometric approach.
      */
-     public function trilaterate(array $anchorPositions, array $distances)
+    public function trilaterate(array $anchorPositions, array $distances)
     {
         // Step 1: Validate input data
         if (count($anchorPositions) < 3) {

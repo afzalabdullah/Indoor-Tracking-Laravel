@@ -33,8 +33,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/sites/show/{id}', [SiteController::class, 'show'])->name('sites.show');
     Route::get('/live', [SiteController::class, 'live'])->name('sites.live');
 
-
-
     // Trilateration route
     Route::post('/trilateration/latest-position', [TrilaterationController::class, 'getLatestPosition']);
 });

@@ -151,15 +151,9 @@ function createPointElement(uid, className, iconClass, deviceName) {
 }
 
 function fetchTrilateration() {
-    // Collect anchor points from DOM elements
     const anchors = Array.from(document.querySelectorAll('.anchor-point')).map(anchor =>
         anchor.getAttribute('data-uid')
     );
-
-    const requestData = { anchors };  // Prepare the request payload
-
-    // Log the outgoing request payload
-    console.log('Outgoing Request:', JSON.stringify(requestData, null, 2));
 
     fetch('/trilateration/latest-position', {
         method: 'POST',
@@ -167,43 +161,26 @@ function fetchTrilateration() {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': '{{ csrf_token() }}',
         },
-        body: JSON.stringify(requestData) // Send the anchors as JSON
+        body: JSON.stringify({ anchors })
     })
     .then(response => {
-        // Log raw response object for troubleshooting
-        console.log('Raw Response:', response);
-
         if (!response.ok) {
-            // Log the error if response status isn't OK
-            console.error('Network response error:', response.statusText);
             throw new Error('Network response was not ok');
         }
         return response.json();
     })
     .then(data => {
-        // Log the response JSON for inspection
-        console.log('Received Data:', JSON.stringify(data, null, 2));
-
         const assetPoints = Object.entries(data).map(([uid, position]) => ({
             uid,
             x: position[0],
             y: position[1],
-            icon: position.name && position.name.toLowerCase() !== 'unknown'
-                ? position.icon || 'default_icon.png'
-                : 'fas fa-question', // Use FontAwesome icon for unknowns
+            icon: position.name && position.name.toLowerCase() !== 'unknown' ? position.icon || 'default_icon.png' : 'fas fa-question', // Use FontAwesome question mark icon for unknown
             name: position.name || 'Unknown'
         }));
 
-        // Log the transformed asset points
-        console.log('Asset Points:', assetPoints);
-
-        // Position the points on the page
         positionPoints(assetPoints, 'asset-point');
     })
-    .catch(error => {
-        // Log any fetch-related error
-        console.error('Error fetching trilateration data:', error);
-    });
+    .catch(error => console.error('Error fetching trilateration data:', error));
 }
 
 const image = document.getElementById('site-image');

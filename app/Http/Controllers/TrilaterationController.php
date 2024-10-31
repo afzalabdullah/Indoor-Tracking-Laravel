@@ -121,56 +121,59 @@ class TrilaterationController extends Controller
      * Trilateration logic using the geometric approach.
      */
     public function trilaterate(array $anchorPositions, array $distances)
-    {
-        // Step 1: Validate input data
-        if (count($anchorPositions) < 3) {
-            throw new \Exception("At least three unique anchor positions are required.");
-        }
-
-        if (count($anchorPositions) !== count($distances)) {
-            throw new \Exception("The number of distances must match the number of anchor positions.");
-        }
-
-        // Ensure all anchors are unique and distances are valid
-        $uniquePositions = array_unique($anchorPositions, SORT_REGULAR);
-        if (count($uniquePositions) < 3) {
-            throw new \Exception("Anchor positions must be unique.");
-        }
-
-        foreach ($distances as $distance) {
-            if ($distance <= 0) {
-                throw new \Exception("Distances must be greater than zero.");
-            }
-        }
-
-        // Step 2: Extract coordinates for easier calculation
-        list($x1, $y1) = $anchorPositions[0];
-        list($x2, $y2) = $anchorPositions[1];
-        list($x3, $y3) = $anchorPositions[2];
-
-        $d1 = $distances[0];
-        $d2 = $distances[1];
-        $d3 = $distances[2];
-
-        // Step 3: Calculate intermediate values to avoid division by zero
-        $A = 2 * ($x2 - $x1);
-        $B = 2 * ($y2 - $y1);
-        $C = 2 * ($x3 - $x2);
-        $D = 2 * ($y3 - $y2);
-
-        $E = pow($d1, 2) - pow($d2, 2) - pow($x1, 2) + pow($x2, 2) - pow($y1, 2) + pow($y2, 2);
-        $F = pow($d2, 2) - pow($d3, 2) - pow($x2, 2) + pow($x3, 2) - pow($y2, 2) + pow($y3, 2);
-
-        // Check for division by zero (parallel lines or identical points)
-        if (($A * $D - $B * $C) == 0) {
-            throw new \DivisionByZeroError("Invalid anchor configuration: Division by zero detected.");
-        }
-
-        // Step 4: Calculate the x and y coordinates of the target position
-        $x = ($E * $D - $B * $F) / ($A * $D - $B * $C);
-        $y = ($A * $F - $E * $C) / ($A * $D - $B * $C);
-
-        // Return the calculated position
-        return [$x, $y];
+{
+    // Step 1: Validate input data
+    if (count($anchorPositions) < 3) {
+        throw new \Exception("At least three unique anchor positions are required.");
     }
+
+    if (count($anchorPositions) !== count($distances)) {
+        throw new \Exception("The number of distances must match the number of anchor positions.");
+    }
+
+    // Ensure all anchors are unique and distances are valid
+    $uniquePositions = array_unique($anchorPositions, SORT_REGULAR);
+    if (count($uniquePositions) < 3) {
+        throw new \Exception("Anchor positions must be unique.");
+    }
+
+    foreach ($distances as $distance) {
+        if ($distance <= 0) {
+            throw new \Exception("Distances must be greater than zero.");
+        }
+    }
+
+    // Step 2: Extract coordinates for easier calculation
+    list($x1, $y1) = $anchorPositions[0];
+    list($x2, $y2) = $anchorPositions[1];
+    list($x3, $y3) = $anchorPositions[2];
+
+    $d1 = $distances[0];
+    $d2 = $distances[1];
+    $d3 = $distances[2];
+
+    // Step 3: Calculate intermediate values
+    $A = 2 * ($x2 - $x1);
+    $B = 2 * ($y2 - $y1);
+    $C = 2 * ($x3 - $x2);
+    $D = 2 * ($y3 - $y2);
+
+    $E = pow($d1, 2) - pow($d2, 2) - pow($x1, 2) + pow($x2, 2) - pow($y1, 2) + pow($y2, 2);
+    $F = pow($d2, 2) - pow($d3, 2) - pow($x2, 2) + pow($x3, 2) - pow($y2, 2) + pow($y3, 2);
+
+    // Check for division by zero (parallel lines or identical points)
+    if (($A * $D - $B * $C) == 0) {
+        Log::error("Invalid anchor configuration: Division by zero detected. Anchor positions: " . json_encode($anchorPositions));
+        // Return an indicative error instead of throwing an exception
+        return ['error' => 'Invalid anchor configuration: Division by zero detected.'];
+    }
+
+    // Step 4: Calculate the x and y coordinates of the target position
+    $x = ($E * $D - $B * $F) / ($A * $D - $B * $C);
+    $y = ($A * $F - $E * $C) / ($A * $D - $B * $C);
+
+    // Return the calculated position
+    return [$x, $y];
+}
+
 }
